@@ -6,6 +6,5 @@ namespace API.W.Movies.DAL.Models
     {
         [Required] //indica que el campo es obligatorio
         public string Name { get; set; }
-    
     }
 }
