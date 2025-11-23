@@ -2,6 +2,7 @@
 using API.W.Movies.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.W.Movies.Controllers
 {
@@ -34,8 +35,15 @@ namespace API.W.Movies.Controllers
 
         public async Task<ActionResult<CategoryDto>> GetCategoryAsync(int id)
         {
+            try
+            {
             var categoryDto = await _categoryService.GetCategoryAsync(id);
             return Ok(categoryDto);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontró"))
+            {
+                return NotFound(new { ex.Message });
+            }
         }
         [HttpPut("{id: int}", Name = "UpdateCategoryAsync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,7 +61,7 @@ namespace API.W.Movies.Controllers
 
             try
             {
-               var updatedCategory = await  _categoryService.UpdateCategoryAsync(dto, id);
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(dto, id);
                 return Ok(updatedCategory);
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
@@ -93,6 +101,34 @@ namespace API.W.Movies.Controllers
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Ya existe"))
             {
+                return Conflict(new { ex.Message });
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontró"))
+            {
+                return NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpDelete("{id: int}", Name = "DeleteCategoryAsync")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult> DeleteCategoryAsync(int id)
+        {
+            try
+            {
+                var deletedCategory = await _categoryService.DeleteCategoryAsync(id);
+                return Ok(deletedCategory); //retorno ok para mostrar el true
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("No se encontró"))
+            {
                 return Conflict(ex.Message);
             }
             catch (Exception ex)
@@ -101,5 +137,6 @@ namespace API.W.Movies.Controllers
             }
 
         }
+
     }
 }
