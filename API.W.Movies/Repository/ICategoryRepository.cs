@@ -11,7 +11,5 @@ namespace API.W.Movies.Repository
         Task<bool> CreateCategoryAsync(Category category); //Crea una nueva categoria
         Task<bool> UpdateCategoryAsync(Category category); //Crea una nueva categoria --Puedo actualizar el nombre y fecha de actualizacion
         Task<bool> DeleteCategoryAsync(int id); //Elimina una categoria 
-
-
     }
 }
