@@ -22,6 +22,12 @@ namespace API.W.Movies.Controllers
         public async Task<ActionResult<ICollection<MovieDto>>> GetMoviesAsync()
         {
             var movies = await _movieService.GetMoviesAsync();
+
+            if (movies == null || !movies.Any())
+            {
+                return NotFound(new { Message = "No se encontraron películas en la base de datos" });
+            }
+
             return Ok(movies);
         }
 
